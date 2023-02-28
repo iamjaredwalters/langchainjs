@@ -134,7 +134,7 @@ export abstract class BaseLLM {
         results.generations.map(async (generation, index) => {
           const promptIndex = missingPromptIndices[index];
           generations[promptIndex] = generation;
-          cache.update(prompts[promptIndex], llmStringKey, generation);
+          return cache.update(prompts[promptIndex], llmStringKey, generation);
         })
       );
       llmOutput = results.llmOutput ?? {};
