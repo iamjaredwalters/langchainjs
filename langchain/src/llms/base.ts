@@ -18,7 +18,7 @@ const getCallbackManager = (): LLMCallbackManager => ({
 
 const getVerbosity = () => true;
 
-const cache: BaseCache = new InMemoryCache();
+const GLOBAL_CACHE: BaseCache = new InMemoryCache();
 
 export type SerializedLLM = {
   _type: string;
@@ -34,7 +34,7 @@ export abstract class BaseLLM {
    */
   name: string;
 
-  cache?: boolean;
+  cache?: BaseCache;
 
   callbackManager: LLMCallbackManager;
 
@@ -55,11 +55,17 @@ export abstract class BaseLLM {
     callbackManager?: LLMCallbackManager,
     verbose?: boolean,
     concurrency?: number,
-    cache?: boolean
+    cache?: BaseCache | boolean
   ) {
     this.callbackManager = callbackManager ?? getCallbackManager();
     this.verbose = verbose ?? getVerbosity();
-    this.cache = cache;
+    if (typeof cache === "object") {
+      this.cache = cache;
+    } else if (cache) {
+      this.cache = GLOBAL_CACHE;
+    } else {
+      this.cache = undefined;
+    }
     this.concurrency = concurrency ?? Infinity;
     this.queue = new PQueue({ concurrency: this.concurrency });
   }
@@ -101,14 +107,11 @@ export abstract class BaseLLM {
       throw new Error("Argument 'prompts' is expected to be a string[]");
     }
 
-    if (this.cache === true && cache === null) {
-      throw new Error("Requested cache, but no cache found");
-    }
-
-    if (cache === null || this.cache === false) {
+    if (!this.cache) {
       return this._generateUncached(prompts, stop);
     }
 
+    const { cache } = this;
     const params = this.serialize();
     params.stop = stop;
 

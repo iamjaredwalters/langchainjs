@@ -13,6 +13,7 @@ import type fetchAdapterT from "../util/axios-fetch-adapter.js";
 import { chunkArray } from "../util/index.js";
 import { BaseLLM } from "./base.js";
 import { LLMResult, LLMCallbackManager } from "./index.js";
+import { BaseCache } from "../cache.js";
 
 interface ModelParams {
   /** Sampling temperature to use */
@@ -131,7 +132,7 @@ export class OpenAI extends BaseLLM implements OpenAIInput {
     fields?: Partial<OpenAIInput> & {
       callbackManager?: LLMCallbackManager;
       concurrency?: number;
-      cache?: boolean;
+      cache?: BaseCache | boolean;
       verbose?: boolean;
       openAIApiKey?: string;
     },

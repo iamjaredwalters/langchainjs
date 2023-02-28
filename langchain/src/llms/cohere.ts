@@ -1,3 +1,4 @@
+import { BaseCache } from "../cache.js";
 import { LLM, LLMCallbackManager } from "./index.js";
 
 interface CohereInput {
@@ -28,7 +29,7 @@ export class Cohere extends LLM implements CohereInput {
       callbackManager?: LLMCallbackManager;
       verbose?: boolean;
       concurrency?: number;
-      cache?: boolean;
+      cache?: BaseCache | boolean;
     }
   ) {
     super(

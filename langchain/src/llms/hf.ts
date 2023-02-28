@@ -1,4 +1,5 @@
 import type HuggingFaceT from "huggingface";
+import { BaseCache } from "../cache.js";
 import { LLM, LLMCallbackManager } from "./index.js";
 
 interface HFInput {
@@ -14,7 +15,7 @@ export class HuggingFaceInference extends LLM implements HFInput {
       callbackManager?: LLMCallbackManager;
       verbose?: boolean;
       concurrency?: number;
-      cache?: boolean;
+      cache?: BaseCache | boolean;
     }
   ) {
     super(
